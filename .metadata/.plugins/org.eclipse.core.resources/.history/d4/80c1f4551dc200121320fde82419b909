@@ -1,0 +1,147 @@
+package Client;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
+import java.io.*;
+import java.net.*;
+import javax.swing.*;
+import java.util.*;
+import javax.swing.border.*;
+
+public class Client2 extends Canvas {
+	private int clientNum;
+	private int curX;
+	private int curY;
+	private int oldX;
+	private int oldY;
+	private int set=0;
+
+	// 게임시작 버튼 눌렀을때 그림그리기
+	private boolean isStart = false;
+	private boolean isQuestion = false;
+	private Color color = Color.BLACK; 
+	
+	String msg;
+
+	public Client2(int clientNum) {  
+		this.clientNum = clientNum;
+		this.isStart = isStart;
+		this.isQuestion = isQuestion;
+
+		System.out.println("그림그리기 번호 : " + clientNum);
+		setBackground(Color.WHITE);		
+
+		addMouseListener(new MouseAdapter() {
+		public void mousePressed(MouseEvent e) {
+			if(getClientNum() == 1) {
+			if ( e.getButton() == MouseEvent.BUTTON1_MASK){
+				curX = e.getX();
+				curY = e.getY();
+				oldX = e.getX();
+				oldY = e.getY();
+				//System.out.println("MultiPaint x좌표 : " + curX);
+				set = 1;
+				//repaint();
+			} else if ( e.getButton() == MouseEvent.BUTTON3_MASK){
+				curX = e.getX();
+				curY = e.getY();
+				oldX = e.getX();
+				oldY = e.getY();
+				//System.out.println("MultiPaint x좌표 : " + curX);
+				set = 2;
+				//repaint();
+			}
+			
+		}
+		}
+		});
+		addMouseMotionListener(new MouseMotionListener() {
+			public void mouseMoved(MouseEvent e) {}
+			public void mouseDragged(MouseEvent e) {
+				if(getClientNum() == 1) {
+				curX = oldX;
+				curY = oldY;
+				oldX = e.getX();
+				oldY = e.getY();
+				//repaint();
+				msg = "DRAW:" + curX + "_" + curY;
+			try{				
+				CatchmindDriver.getDos().writeUTF(msg);
+				CatchmindDriver.getDos().flush();
+			}catch(Exception ee){
+				ee.printStackTrace();
+			}
+			}
+		//repaint();
+			}
+		});			
+	
+	} // 생성자		
+	
+	public void update(Graphics g) {
+		paint(g);
+	}
+	public void paint(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;	
+		g2.setColor(color);
+		g2.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, 2));
+		g2.drawLine(curX, curY, oldX, oldY);			
+	}
+	public void changeColor(Color color) {
+		this.color = color;
+	}
+	public int getOldX() {
+		return oldX;
+	}
+	public void setOldX(int oldX) {
+		this.oldX = oldX;
+	}
+	public int getOldY() {
+		return oldX;
+	}
+	public void setOldY(int oldY) {
+		this.oldY = oldY;
+	}
+	public int getCurX() {
+		return curX;
+	}
+	public void setCurX(int curX) {
+		this.curX = curX;
+	}
+	public int getCurY() {
+		return curY;
+	}
+	public void setCurY(int curY) {
+		this.curY = curY;
+	}
+	public int getClick() {//마우스 클릭 메소드
+		return set;
+	}
+	public void setClick(int set) {//마우스 클릭 메소드
+		this.set = set;
+	}
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public boolean getIsStart() {
+		return isStart;
+	}
+	public void setIsStart ( boolean isStart ) {
+		this.isStart = isStart;
+	}
+	public boolean getisQuestion() {
+		return isQuestion;
+	}
+	public void setIsQuestion ( boolean IsQuestion ) {
+		this.isQuestion = isQuestion;
+	}
+	public int getClientNum(){
+		return clientNum;
+	}
+	public void setClientNum(int clientNum){
+		this.clientNum = clientNum;
+	}
+
+}

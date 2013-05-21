@@ -1,0 +1,71 @@
+package catchClient;
+
+import javax.swing.JToolBar;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButton;
+import javax.swing.ImageIcon;
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+
+public class ColorBar extends JToolBar {
+	
+	public static enum ColorButtons{ Black, Blue, Green, Yellow, Red, Clear};
+	public static final String IMG_URL = "images/";
+	public static final String SUFFIX_TOOLBAR_BTN = ".gif";
+	public static final String SUFFIX_TOOLBAR_BTN_SLT = "SLT.gif";
+	
+	private Client client;
+	
+	private ColorBarHandler colorBarHandler;
+	private ButtonGroup buttonGroup;
+	
+	public ColorBar(String s, Client cl){
+		super(s);
+		
+		
+		client = cl;
+		buttonGroup = new ButtonGroup();
+		JRadioButton rButton = null;
+		colorBarHandler = new ColorBarHandler();
+		
+		for(ColorButtons btn : ColorButtons.values()){
+			rButton = new JRadioButton();
+			rButton.setIcon(new ImageIcon(IMG_URL + btn.toString() + 
+					SUFFIX_TOOLBAR_BTN));
+			rButton.setSelectedIcon(new ImageIcon(IMG_URL + btn.toString() + 
+					SUFFIX_TOOLBAR_BTN_SLT));
+			rButton.addActionListener(colorBarHandler);
+			rButton.setActionCommand(btn.toString()); //btn : 버튼을 가진 열거타입
+			this.add(rButton);
+			buttonGroup.add(rButton);
+			
+		}
+	}
+	public void init(ColorBar c){
+		
+	}
+	
+	
+	private class ColorBarHandler implements ActionListener{
+		public void actionPerformed(ActionEvent e){
+			JRadioButton button = (JRadioButton)e.getSource();
+				if(button.getActionCommand().equals("Black")){
+				client.actionPerformed(e);
+			} else if(button.getActionCommand().equals("Blue")){
+				client.actionPerformed(e);				
+			} else if(button.getActionCommand().equals("Green")){
+				client.actionPerformed(e);				
+			}else if(button.getActionCommand().equals("Yellow")){
+				client.actionPerformed(e);				
+			} else if(button.getActionCommand().equals("Red")){
+				client.actionPerformed(e);				
+			} else if(button.getActionCommand().equals("Clear")){
+				client.actionPerformed(e);				
+			}
+			
+		}
+	}
+}
