@@ -15,7 +15,7 @@ class Client extends Thread
 	private String id;				// client id는 "user1,user2,...(접속순서)" 이다.
 	private int roomnum;			// 방번호를 나타내는 변수 초기값 -1(대기실)
 	private String gameId;
-	RandomWord randomWord;
+	private static RandomWord randomWord;
 
 	String state;					// 준비중인지 현재 상태를 나타냄
 	
@@ -111,6 +111,55 @@ class Client extends Thread
 				{
 					svr.clientcontroller.sendToRoom(roomnum, "[Chat] [ " + gameId + " ] : " + msg.substring(7));
 						//[Chat] 을 제외한 id + 메시지를 채팅창에 보냄
+					if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.state.equals("gameOn"))
+					{
+//						System.out.println(gameId);
+//						System.out.println(roomnum);
+//						System.out.println((randomWord.getrandomword()));
+					if(msg.substring(7).toString().equals((randomWord.getrandomword())))
+					{
+						
+						System.out.println("정답");
+						sendToMe("[GameGetScore]");
+						System.out.println("[GameGetScore]");
+						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+gameId+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
+						svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.FinishTurn();
+						msg=svr.roomcontroller.nextTurn(roomnum);
+						System.out.println("다음턴은"+msg);
+						svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
+						randomWord = new RandomWord();
+						svr.clientcontroller.sendToOne(msg,"[GameRandomWord]"+randomWord.getrandomword());
+						
+					}
+					}
+					
+				}
+				if(msg.startsWith("[GameChat] ")) 	//[Chat] 으로 시작하는 메시지면 같은 방에있는 사람과 채팅 (대기실은 방번호가 -1)
+				{
+					System.out.println(roomnum);
+					svr.clientcontroller.sendToRoom(roomnum, "[GameChat] [ " + gameId + " ] : " + msg.substring(11));
+					if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.state.equals("gameOn"))
+					{
+//						System.out.println(gameId);
+//						System.out.println(roomnum);
+//						System.out.println((randomWord.getrandomword()));
+					if(msg.substring(11).toString().equals((randomWord.getrandomword())))
+					{
+						
+						System.out.println("정답");
+						sendToMe("[GameGetScore]");
+						System.out.println("[GameGetScore]");
+						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+gameId+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
+						svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.FinishTurn();
+						msg=svr.roomcontroller.nextTurn(roomnum);
+						System.out.println("다음턴은"+msg);
+						svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
+						randomWord = new RandomWord();
+						svr.clientcontroller.sendToOne(msg,"[GameRandomWord]"+randomWord.getrandomword());
+						
+					}
+					}
+						//[Chat] 을 제외한 id + 메시지를 채팅창에 보냄
 				}
 				if(msg.startsWith("[login] "))
 				{
@@ -205,22 +254,7 @@ class Client extends Thread
 					svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.state="gameOn";//방번호로직이 틀림 ㅜ.ㅜ
 					System.out.println(roomnum);
 				}
-				if(msg.startsWith("[GameChat] ")) 	//[Chat] 으로 시작하는 메시지면 같은 방에있는 사람과 채팅 (대기실은 방번호가 -1)
-				{
-					svr.clientcontroller.sendToRoom(roomnum, "[GameChat] [ " + gameId + " ] : " + msg.substring(11));
-					
-					if(msg.substring(11).toString().equals((randomWord.getrandomword())))
-					{
-						
-						System.out.println("정답");
-						sendToMe("[GameGetScore]");
-						svr.clientcontroller.sendToAll("[GameChat] "+gameId+"님이 정답을 맞추셨습니다.");
-						svr.clientcontroller.sendToAll("[GameNextTurn]"+svr.roomcontroller.nextTurn(roomnum));
-						
-					}
-					
-						//[Chat] 을 제외한 id + 메시지를 채팅창에 보냄
-				}
+
 
 				
 				

@@ -47,12 +47,14 @@ public class ChatPanel extends JPanel implements ActionListener
 	public void GameRoomChatPanel()
 	{
 		this.remove(chatarea);
-		this.remove(waitinputmsg);	
+//		this.remove(waitinputmsg);	
 		gameinputmsg.addActionListener(this);
 		chatarea.setBounds(10, 15, 480, 160);
+		waitinputmsg.setBounds(10, 175, 480, 20);
 		gameinputmsg.setBounds(10, 175, 480, 20);
 		this.add(chatarea);
-		this.add(gameinputmsg);	
+		this.add(waitinputmsg);
+//		this.add(gameinputmsg);	
 		
 	}
 	
@@ -82,17 +84,17 @@ public class ChatPanel extends JPanel implements ActionListener
 			}
 			waitinputmsg.setText("");
 		}
-		else if(event.getSource()==gameinputmsg)
-		{
-			msg=gameinputmsg.getText();
-			try {
-				CatchmindDriver.getDos().writeUTF("[GameChat] "+msg);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			gameinputmsg.setText("");
-			
-		}
+//		else if(event.getSource()==gameinputmsg)
+//		{
+//			msg=gameinputmsg.getText();
+//			try {
+//				CatchmindDriver.getDos().writeUTF("[GameChat] "+msg);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			gameinputmsg.setText("");
+//			
+//		}
 	}
 
 }

@@ -16,7 +16,7 @@ public class RandomWord {
 		// TODO Auto-generated constructor stub
 		int count=0;
 		while(count<1){
-		b = (int)(Math.random()*6);	
+		b = (int)(Math.random()*6);
 		
 //		System.out.println(word[b]);
 //		randomWord= word[b];
@@ -35,18 +35,18 @@ public class RandomWord {
 		
 	}
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-		
-		RandomWord randomWord = new RandomWord();
-		String line=randomWord.getrandomword();
-		System.out.println(line);
-
-	
-		
-		
-		
-	}
+//	public static void main(String[] args) {
+//		// TODO Auto-generated method stub
+//		
+//		
+//		RandomWord randomWord = new RandomWord();
+//		String line=randomWord.getrandomword();
+//		System.out.println(line);
+//
+//	
+//		
+//		
+//		
+//	}
 
 }
