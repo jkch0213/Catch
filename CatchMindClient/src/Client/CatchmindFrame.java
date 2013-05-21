@@ -17,7 +17,7 @@ import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
 
-
+//test
 
 public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 {
