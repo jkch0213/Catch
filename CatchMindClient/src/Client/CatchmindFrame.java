@@ -422,6 +422,11 @@ public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 					System.out.println(line);
 					chatpanel.chatarea.append(line.substring(11)+"\n");
 				}
+				else if(line.startsWith("[GameNextTurn]"))
+				{
+					gamepanel.run.FinishTurn();
+					
+				}
 			}
 		} catch (IOException e) {  
 			System.out.println("서버와 연결이 끊어졌습니다.");
@@ -439,13 +444,12 @@ public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 		{
 			try {
 				CatchmindDriver.exit();		// 서버와 접속을 해지함 : 메인함수의 socket, dis, dos를 close
+				System.exit(0);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			this.setVisible(false);			// 종료 버튼을 누르면 프레임을 닫음
 //			SoundEffect.BGM.stop();			// 배경음악을 끔
-			System.exit(0);
-
 		}
 		
 		if(event.getSource()== roomMake){

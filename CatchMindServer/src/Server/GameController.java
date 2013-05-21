@@ -10,13 +10,15 @@ public class GameController{
 	static int second=0;
 	static String state = "gameOff";
 	static String roomnumber;
+	static int endturntime=3; //턴수제한
 	Timer timer;
+	WorkTask run;
 	
 	
 	public GameController(String roomnumber) {
 		// TODO Auto-generated constructor stub
 		Timer timer = new Timer();
-		WorkTask run;
+		
 		timer.schedule(run = new WorkTask(), 0, 1000);
 		
 		
@@ -34,11 +36,16 @@ public class GameController{
 		public void run() {
 		    String msg;	
 		    
-			if (state == "gameOn") {
-				timeprint();
+			if (state == "gameOn") 
+			{
+				
 				i = i + 1;
-				second=i;
-			//	System.out.println(i);
+				if(second!=60)
+				{
+					second=i;
+				}
+//				timeprint();
+				System.out.println(i);
 				if (second == 60) {
 					i = 0;
 					second=i;
@@ -47,7 +54,7 @@ public class GameController{
 						minute =0;
 					
 					turnNum=turnNum+1;
-					if(turnNum==2)
+					if(turnNum==endturntime)
 					{
 						state="gameOff";
 						
@@ -79,7 +86,11 @@ public class GameController{
 		
 		public void FinishTurn() //누군가 정답을 맞췃을때 다음턴으로
 		{
+			second=0;
+			i=0;
 			
+			turnNum++;
+			System.out.println("서버턴"+turnNum);
 		}
 
 	}
