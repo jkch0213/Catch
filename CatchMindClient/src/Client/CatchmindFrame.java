@@ -19,7 +19,7 @@ import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
 
 //test
 //test2
-
+//test3
 public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 {
 	public static enum ColorButtons{ Black, Blue, Green, Yellow, Red, Clear};
