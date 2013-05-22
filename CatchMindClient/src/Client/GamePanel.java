@@ -32,7 +32,7 @@ public class GamePanel extends JPanel implements ActionListener
 	static String state = "gameOff";
 	static String roomnumber;
 	Timer timer;
-	static int endturntime=3; //턴수제한
+	static int endturntime=6; //턴수제한
 	WorkTask run;
 	
 	public static JLabel statusBar=new JLabel();
@@ -184,7 +184,7 @@ public static class WorkTask extends TimerTask {
 						
 //					    Server.clientcontroller.sendToRoom(Integer.parseInt(roomnumber), msg);
 					turnNum=turnNum+1;
-					if(turnNum==endturntime)
+					if(turnNum>endturntime)
 					{
 						state="gameOff";
 						msg="[GameFnishAllTurn]";
@@ -234,8 +234,9 @@ public static class WorkTask extends TimerTask {
 			second=0;
 			i=0;
 			word.setText("");
-			turnNum++;
 			System.out.println("턴"+turnNum);
+			turnNum++;
+			
 		}
 
 	}

@@ -125,10 +125,18 @@ class Client extends Thread
 						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+gameId+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
 						svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.FinishTurn();
 						msg=svr.roomcontroller.nextTurn(roomnum);
+						System.out.println(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()+"if전");
+						if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()=="gameOn")
+						{
 						System.out.println("다음턴은"+msg);
 						svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
 						randomWord = new RandomWord();
 						svr.clientcontroller.sendToOne(msg,"[GameRandomWord]"+randomWord.getrandomword());
+						}
+						if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()=="gameOff")
+						{
+							System.out.println("게임종료");
+						}
 						
 					}
 					}
@@ -152,6 +160,9 @@ class Client extends Thread
 						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+gameId+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
 						svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.FinishTurn();
 						msg=svr.roomcontroller.nextTurn(roomnum);
+						String temp=""+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState();
+						System.out.println(temp);
+//						if(
 						System.out.println("다음턴은"+msg);
 						svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
 						randomWord = new RandomWord();

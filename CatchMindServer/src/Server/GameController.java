@@ -10,7 +10,7 @@ public class GameController{
 	static int second=0;
 	static String state = "gameOff";
 	static String roomnumber;
-	static int endturntime=3; //턴수제한
+	static int endturntime=6; //턴수제한
 	Timer timer;
 	WorkTask run;
 	
@@ -34,8 +34,11 @@ public class GameController{
 
 		@Override
 		public void run() {
+			
 		    String msg;	
-		    
+		    if(turnNum<=endturntime)
+		    {
+		    	
 			if (state == "gameOn") 
 			{
 				
@@ -64,6 +67,11 @@ public class GameController{
 				}
 
 			}
+		    }
+		    else
+		    {
+		    	state="gameOff";
+		    }
 		}
 		public void timeprint(){
 //			System.out.println(minute+"분"+second+"초\n");
@@ -88,9 +96,19 @@ public class GameController{
 		{
 			second=0;
 			i=0;
-			
+			System.out.println("서버턴"+turnNum+"종료");
 			turnNum++;
-			System.out.println("서버턴"+turnNum);
+			if(turnNum>endturntime)
+			{
+				state="gameOff";
+			}
+			System.out.println("서버턴"+turnNum+"시작");
+			
+		}
+		
+		public String ReturnState()
+		{
+			return state;
 		}
 
 	}

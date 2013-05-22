@@ -1,5 +1,18 @@
 [
   {
+    "symbolicName": "com.mysql.jdbc",
+    "version": {
+      "major": 5,
+      "minor": 1,
+      "micro": 25,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "77092441971b50cba3a773f71da57f5c8d28ae80",
+    "jarFileModificationDate": "2013-04-17T14:03:28+09:00",
+    "location": "C:\\Program Files\\Java\\jre7\\lib\\ext\\mysql-connector-java-5.1.25-bin.jar",
+    "javaRuntime": false
+  },
+  {
     "symbolicName": "jre",
     "version": {
       "major": 1,
