@@ -246,11 +246,17 @@ class Client extends Thread
 					msg="[SetGameStart]";
 					svr.clientcontroller.sendToRoom(roomnum, msg);
 					
-					msg="[GameRandomWord]"+randomWord.getrandomword();
-					String tempId=svr.roomcontroller.getFirstPlayerId(roomnum);
-					svr.clientcontroller.sendToOne(tempId,msg);
+//					msg="[GameRandomWord]"+randomWord.getrandomword();
+//					String tempId=svr.roomcontroller.getFirstPlayerId(roomnum);
+//					svr.clientcontroller.sendToOne(tempId,msg);
+					msg=svr.roomcontroller.nextTurn(roomnum);
+					System.out.println("다음턴은"+msg);
+					svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
+					randomWord = new RandomWord();
+					svr.clientcontroller.sendToOne(msg,"[GameRandomWord]"+randomWord.getrandomword());
 					System.out.println(gameId+"방번호"+roomnum);
-					svr.clientcontroller.sendToOne(tempId, "[GameTurn]");
+//					svr.clientcontroller.sendToOne(tempId, "[GameTurn]");
+					
 					svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.state="gameOn";//방번호로직이 틀림 ㅜ.ㅜ
 					System.out.println(roomnum);
 				}

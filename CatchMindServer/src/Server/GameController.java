@@ -45,7 +45,7 @@ public class GameController{
 					second=i;
 				}
 //				timeprint();
-				System.out.println(i);
+//				System.out.println(i);
 				if (second == 60) {
 					i = 0;
 					second=i;

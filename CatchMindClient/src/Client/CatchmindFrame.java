@@ -422,7 +422,7 @@ public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 				else if(line.startsWith("[GameChat]"))		// [ / 로 시작하는 메시지면 채팅창에 메시지를 출력
 				{
 					System.out.println(line);
-					chatpanel.chatarea.append(line.substring(11)+"\n");
+					chatpanel.chatarea.append(line.substring(10)+"\n");
 				}
 				else if(line.startsWith("[GameNextTurn]"))
 				{
