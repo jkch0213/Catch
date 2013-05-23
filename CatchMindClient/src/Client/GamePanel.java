@@ -32,7 +32,7 @@ public class GamePanel extends JPanel implements ActionListener
 	static String state = "gameOff";
 	static String roomnumber;
 	Timer timer;
-	static int endturntime=3; //턴수제한
+	static int endturntime=6; //턴수제한
 	WorkTask run;
 	
 	public static JLabel statusBar=new JLabel();
@@ -86,7 +86,21 @@ public class GamePanel extends JPanel implements ActionListener
 		this.remove(start);
 		repaint();
 	}
-	
+	public void EndGame()
+	{
+		this.add(ready);
+		minute=0;
+		second=0;
+		state="gameOff";
+		
+		try {
+			CatchmindDriver.getDos().writeUTF("[EndAllTurn]");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	public void startGame()
 	{
 		this.remove(start);
@@ -158,7 +172,7 @@ public class GamePanel extends JPanel implements ActionListener
 public static class WorkTask extends TimerTask {
 
 		
-		int turnNum=1;
+		int turnNum=0;
 		int i = 0;
 
 		@Override
@@ -184,7 +198,7 @@ public static class WorkTask extends TimerTask {
 						
 //					    Server.clientcontroller.sendToRoom(Integer.parseInt(roomnumber), msg);
 					turnNum=turnNum+1;
-					if(turnNum==endturntime)
+					if(turnNum>endturntime)
 					{
 						state="gameOff";
 						msg="[GameFnishAllTurn]";
@@ -233,10 +247,23 @@ public static class WorkTask extends TimerTask {
 		{
 			second=0;
 			i=0;
+			System.out.println("쿨라이언트턴"+turnNum+"종료");
+			
 			word.setText("");
+			
 			turnNum++;
-			System.out.println("턴"+turnNum);
+			if(turnNum>endturntime)
+			{
+				state="gameOff";
+				turnNum=0;
+				GamePanel.statusBar.setText( "[0" + minute+"분:"+
+		                 " " + second + "초]" );				
+			}
+			System.out.println("클라이언트턴"+turnNum+"시작");
+			
 		}
 
+		
+		
 	}
 }

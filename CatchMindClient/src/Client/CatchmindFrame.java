@@ -289,9 +289,11 @@ public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 				}
 				else if(line.startsWith("[Login]"))
 				{
-					removeLoginPalnel();
-					WaitRoom();
 					JOptionPane.showMessageDialog(SignUpFrame.IDText, line.substring(7) + "님 반갑습니다.^^");
+					removeLoginPalnel();
+					
+					WaitRoom();
+					
 					repaint();
 					
 				}
@@ -436,6 +438,11 @@ public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 				else if(line.startsWith("[GameNextTurn]"))
 				{
 					gamepanel.run.FinishTurn();
+					if(gamepanel.state=="gameOff")
+					{
+						gamepanel.EndGame();   //모든텅이 끝나고 다시 ready버튼생성
+						repaint();
+					}
 					
 				}
 				else if(line.startsWith("[LoginIDCheck]")){

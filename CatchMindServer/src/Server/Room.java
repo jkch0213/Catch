@@ -48,6 +48,10 @@ public class Room
 		else if (playerlist.size() == 0) this.condition = "null";		// 방에서 모두 퇴장하면 null로 표시
 		else this.condition = playerlist.size() + " / " + max;		// max값을 넘지 않으면 입장한 수 / max로 나타냄
 	}
+	
+	
+	
+	
 	public String getCondition()
 	{
 		return condition;
@@ -115,5 +119,16 @@ public class Room
 			if(playerlist.get(i).state.equals("")) return "wait";	//준비중이지 않은 player가 있을 경우
 		}
 		return "allReady";
+	}
+	
+	public boolean checkTurnOver()
+	{
+		for(int i=0;i<playerlist.size();i++)
+		{
+			if(playerlist.get(i).turnovercheck==false) return false;
+		}
+		
+		return true;
+		
 	}
 }

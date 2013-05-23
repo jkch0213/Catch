@@ -74,7 +74,7 @@ public class ClientController
 
 		for(int i=0;i<clientlist.size();i++)
 		{
-			msg+=clientlist.get(i).getGameId()+"\n";		//모든 접속자 명단
+			msg+=clientlist.get(i).id+"\n";		//모든 접속자 명단
 		}
 		sendToAll(msg);
 	}

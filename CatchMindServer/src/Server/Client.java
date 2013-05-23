@@ -22,10 +22,11 @@ class Client extends Thread
 	protected String reginum;
 	private String ReValue;
 	private int roomnum;			// 방번호를 나타내는 변수 초기값 -1(대기실)
-	private String gameId;
+//	private String gameId;
 	private static RandomWord randomWord;
 
 	String state;					// 준비중인지 현재 상태를 나타냄
+	boolean turnovercheck;          //턴이진행중인지 상태를 나타냄
 	
 	String testId;
 	String testPw;
@@ -112,26 +113,35 @@ class Client extends Thread
 
 				if(msg.startsWith("[Chat] ")) 	//[Chat] 으로 시작하는 메시지면 같은 방에있는 사람과 채팅 (대기실은 방번호가 -1)
 				{
-					svr.clientcontroller.sendToRoom(roomnum, "[Chat] [ " + gameId + " ] : " + msg.substring(7));
+					svr.clientcontroller.sendToRoom(roomnum, "[Chat] [ " + id + " ] : " + msg.substring(7));
 						//[Chat] 을 제외한 id + 메시지를 채팅창에 보냄
 					if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.state.equals("gameOn"))
 					{
 //						System.out.println(gameId);
 //						System.out.println(roomnum);
 //						System.out.println((randomWord.getrandomword()));
-					if(msg.substring(7).toString().equals((randomWord.getrandomword())))
+					if(msg.substring(7).toString().equals((randomWord.getrandomword())))  //client가 정답을 맞추엇으면수행된다.
 					{
 						
 						System.out.println("정답");
 						sendToMe("[GameGetScore]");
 						System.out.println("[GameGetScore]");
-						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+gameId+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
+						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+id+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
 						svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.FinishTurn();
 						msg=svr.roomcontroller.nextTurn(roomnum);
+						System.out.println(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()+"if전");
+						if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()=="gameOn")
+						{
 						System.out.println("다음턴은"+msg);
 						svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
 						randomWord = new RandomWord();
 						svr.clientcontroller.sendToOne(msg,"[GameRandomWord]"+randomWord.getrandomword());
+						}
+						if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()=="gameOff") //해당방 턴이 끝낫으면 클라이언트를 꺼주기위한 if문
+						{
+							System.out.println("게임종료");
+							svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+"클라이언트좀꺼줄래?");//클라이언트 턴 종료
+						}
 						
 					}
 					}
@@ -140,7 +150,7 @@ class Client extends Thread
 				if(msg.startsWith("[GameChat] ")) 	//[Chat] 으로 시작하는 메시지면 같은 방에있는 사람과 채팅 (대기실은 방번호가 -1)
 				{
 					System.out.println(roomnum);
-					svr.clientcontroller.sendToRoom(roomnum, "[GameChat] [ " + gameId + " ] : " + msg.substring(11));
+					svr.clientcontroller.sendToRoom(roomnum, "[GameChat] [ " + id + " ] : " + msg.substring(11));
 					if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.state.equals("gameOn"))
 					{
 //						System.out.println(gameId);
@@ -152,7 +162,7 @@ class Client extends Thread
 						System.out.println("정답");
 						sendToMe("[GameGetScore]");
 						System.out.println("[GameGetScore]");
-						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+gameId+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
+						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+id+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
 						svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.FinishTurn();
 						msg=svr.roomcontroller.nextTurn(roomnum);
 						System.out.println("다음턴은"+msg);
@@ -179,6 +189,7 @@ class Client extends Thread
 					
 					if(ReValue.equals("true")){
 						msg="[Login]" + id;
+						System.out.println("id"+id);
 						sendToMe(msg);
 						dos.writeUTF("[Roomlist]"+ svr.roomcontroller.totalRoom());	//roomlist에 모든 Room객체 의 정보를 받아서 접속한 client에 보냄
 						svr.clientcontroller.updateIDlist();
@@ -275,7 +286,7 @@ class Client extends Thread
 					msg = svr.roomcontroller.getPlayerIDlist(roomnum);		// 방의 IDlist를 업데이트
 					svr.clientcontroller.sendToAll("[Roomlist]"+ svr.roomcontroller.totalRoom());
 //					sendToMe("[PlayerIDlist] "+ msg);
-					 System.out.println(gameId+"방번호"+roomnum);
+					 System.out.println(id+"방번호"+roomnum);
 //					sendToMe("[Information] "+ roomnum + "번 방을 만들었습니다.");
 				}
 				else if(msg.startsWith("[EnterRoom] "))
@@ -290,7 +301,7 @@ class Client extends Thread
 					//msg = svr.roomcontroller.getPlayerIDlist(roomnum);		// 내가 입장하여 변경된 IDlist를 업데이트
 				//	svr.clientcontroller.sendToRoom(roomnum,"[PlayerIDlist] "+ msg);	
 				//	sendToMe("[Information] "+roomnum+"번 방을 입장 하였습니다.");
-					 System.out.println(gameId+"방번호"+roomnum);
+					 System.out.println(id+"방번호"+roomnum);
 				}
 				else if(msg.startsWith("[RequestInfor]"))
 				{
@@ -304,12 +315,12 @@ class Client extends Thread
 					sendToMe(msg);
 					msg ="[RoomNum]" +svr.roomcontroller.getRoomNum(tempnum);
 					sendToMe(msg);
-					 System.out.println(gameId+"방번호"+roomnum);
+					 System.out.println(id+"방번호"+roomnum);
 				}
 				else if(msg.startsWith("[EndSetRoomInfo]"))
 				{
 					sendToMe(msg);
-					 System.out.println(gameId+"방번호"+roomnum);
+					 System.out.println(id+"방번호"+roomnum);
 				}
 				if(msg.startsWith("[GameSetReady]"))
 				{
@@ -322,7 +333,7 @@ class Client extends Thread
 						check=svr.roomcontroller.getFirstPlayerId(roomnum);
 						System.out.println(check);
 						svr.clientcontroller.sendToOne(check, "[GameSetStart]");
-						 System.out.println(gameId+"방번호"+roomnum);
+						 System.out.println(id+"방번호"+roomnum);
 					}
 				}
 				if(msg.startsWith("[GameSetCancel]"))
@@ -331,7 +342,7 @@ class Client extends Thread
 					String check;
 					check=svr.roomcontroller.getFirstPlayerId(roomnum);
 					svr.clientcontroller.sendToOne(check, "[GameRemoveStart]");
-					 System.out.println(gameId+"방번호"+roomnum);
+					 System.out.println(id+"방번호"+roomnum);
 				}
 				if(msg.startsWith("[GameStart]"))
 				{
@@ -347,7 +358,7 @@ class Client extends Thread
 					svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
 					randomWord = new RandomWord();
 					svr.clientcontroller.sendToOne(msg,"[GameRandomWord]"+randomWord.getrandomword());
-					System.out.println(gameId+"방번호"+roomnum);
+					System.out.println(id+"방번호"+roomnum);
 //					svr.clientcontroller.sendToOne(tempId, "[GameTurn]");
 					
 					svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.state="gameOn";//방번호로직이 틀림 ㅜ.ㅜ
@@ -376,11 +387,11 @@ class Client extends Thread
 	}
 
 	public String getGameId() {
-		return gameId;
+		return id;
 	}
 
 	public void setGameId(String gameId) {
-		this.gameId = gameId;
+		this.id = id;
 	}
 
 }
