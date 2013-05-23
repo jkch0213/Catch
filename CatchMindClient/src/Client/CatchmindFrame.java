@@ -17,6 +17,11 @@ import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
 
+import Login.FindIDFrame;
+import Login.FindPassFrame;
+import Login.LoginPanel;
+import Login.SignUpFrame;
+
 //test
 //test2
 //test3
@@ -52,7 +57,7 @@ public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 	LoginPanel loginPanel;		//로그인 페이지 보여주는 프레임
 	GamePanel gamepanel;		// 게임을 진행하는 패널
 	
-	SignUp signUp;			//회원가입 페이지 보여주는 프레임
+	SignUpFrame signUp;			//회원가입 페이지 보여주는 프레임
 	String state;			//창여러개 뜨는걸 방지하기위해....나중에 자세히 코딩
 
 	JButton home;
@@ -282,13 +287,17 @@ public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 //					myInformation.setNumId(line.substring(8));
 //					myInformation.setGameId(line.substring(8));
 				}
-				else if(line.startsWith("[login]"))
+				else if(line.startsWith("[Login]"))
 				{
-					System.out.println(line);
 					removeLoginPalnel();
 					WaitRoom();
+					JOptionPane.showMessageDialog(SignUpFrame.IDText, line.substring(7) + "님 반갑습니다.^^");
 					repaint();
 					
+				}
+				else if(line.startsWith("[LoginFail]")){
+					JOptionPane.showMessageDialog(LoginPanel.loginPanel, "아이디나 비밀번호가 맞지 않습니다. " 
+							,"Login Error", JOptionPane.ERROR_MESSAGE);
 				}
 				else if(line.startsWith("[MadeRoom] "))
 				{
@@ -428,6 +437,38 @@ public class CatchmindFrame extends JFrame implements Runnable, ActionListener
 				{
 					gamepanel.run.FinishTurn();
 					
+				}
+				else if(line.startsWith("[LoginIDCheck]")){
+					if(line.substring(14).equals("true ")){
+						System.out.println("현재 아이디로 가입이 가능합니다");
+						JOptionPane.showMessageDialog(SignUpFrame.IDText, "현재 아이디로 가입이 가능합니다");
+					}
+					else if(line.substring(14).equals("false ")){
+						JOptionPane.showMessageDialog(SignUpFrame.IDText, "현재 아이디로 가입이 불가능합니다. " +
+								"다른 아이디를 입력하세요","ID Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				else if(line.startsWith("[LoginSignUp]")){
+					JOptionPane.showMessageDialog(SignUpFrame.signUpFrame, "가입이 완료되었습니다.");
+					
+				}
+				else if(line.startsWith("[LoginFindPass]")){
+					if(line.substring(15).trim() != null){
+						JOptionPane.showMessageDialog(FindPassFrame.findPassFrame,
+							"비밀번호는 : " + line.substring(15) + "입니다.");
+					}else if(line.substring(15).trim() == null){
+						JOptionPane.showMessageDialog(FindPassFrame.findPassFrame,
+								"입력한 정보가 올바르지 않습니다. 다시 한 번 확인해주세요");
+					}
+				}
+				else if(line.startsWith("[LoginFindID]")){
+					if(line.substring(13).trim() != null){
+						JOptionPane.showMessageDialog(FindIDFrame.findIDFrame,
+							"아이디는 : " + line.substring(13) + "입니다.");
+					}else if(line.substring(13).trim() == null){
+						JOptionPane.showMessageDialog(FindIDFrame.findIDFrame,
+								"입력한 정보가 올바르지 않습니다. 다시 한 번 확인해주세요.");
+					}
 				}
 			}
 		} catch (IOException e) {  

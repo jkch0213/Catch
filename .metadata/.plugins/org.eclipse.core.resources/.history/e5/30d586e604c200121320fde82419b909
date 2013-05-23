@@ -1,9 +1,0 @@
-package catchClient;
-
-public class Luncher {
-
-	public static void main(String args[]){
-		ClientFrame frame = ClientFrame.getInstance();
-		frame.init();
-	}
-}

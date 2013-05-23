@@ -1,18 +1,26 @@
 package Server;
 import java.io.*;
 import java.net.*;
+import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.print.attribute.standard.Severity;
+
+import DBController.Login;
 
 class Client extends Thread 
 {
 	protected Server svr;
 	protected Socket socket;
 	protected DataInputStream dis;
-	protected  DataOutputStream dos;
-	private String id;				// client id는 "user1,user2,...(접속순서)" 이다.
+	protected DataOutputStream dos;
+	protected String id;				// client id는 "user1,user2,...(접속순서)" 이다.
+	protected String pass;
+	protected String name;
+	protected String reginum;
+	private String ReValue;
 	private int roomnum;			// 방번호를 나타내는 변수 초기값 -1(대기실)
 	private String gameId;
 	private static RandomWord randomWord;
@@ -22,6 +30,9 @@ class Client extends Thread
 	String testId;
 	String testPw;
 	protected ItemController itemController;
+	Login loginController;
+	StringTokenizer tokenizer1;
+	String[] user = new String[10];
 	
 	
 	
@@ -99,14 +110,6 @@ class Client extends Thread
 				msg = dis.readUTF();   
 				System.out.println(id+" ("+ this.socket.getInetAddress() + ") " + msg);
 
-				if(msg.startsWith("[loginId]"))
-				{
-					testId=msg.substring(9);
-				}
-				if(msg.startsWith("[loginPw]"))
-				{
-					testPw=msg.substring(9);
-				}
 				if(msg.startsWith("[Chat] ")) 	//[Chat] 으로 시작하는 메시지면 같은 방에있는 사람과 채팅 (대기실은 방번호가 -1)
 				{
 					svr.clientcontroller.sendToRoom(roomnum, "[Chat] [ " + gameId + " ] : " + msg.substring(7));
@@ -125,18 +128,10 @@ class Client extends Thread
 						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+gameId+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
 						svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.FinishTurn();
 						msg=svr.roomcontroller.nextTurn(roomnum);
-						System.out.println(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()+"if전");
-						if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()=="gameOn")
-						{
 						System.out.println("다음턴은"+msg);
 						svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
 						randomWord = new RandomWord();
 						svr.clientcontroller.sendToOne(msg,"[GameRandomWord]"+randomWord.getrandomword());
-						}
-						if(svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState()=="gameOff")
-						{
-							System.out.println("게임종료");
-						}
 						
 					}
 					}
@@ -160,9 +155,6 @@ class Client extends Thread
 						svr.clientcontroller.sendToRoom(roomnum, "[GameChat]"+gameId+"님이"+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.turnNum+"번째턴 정답을 맞추셨습니다.");
 						svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.FinishTurn();
 						msg=svr.roomcontroller.nextTurn(roomnum);
-						String temp=""+svr.roomcontroller.roomlist.get(roomnum-1).gamecontroller.run.ReturnState();
-						System.out.println(temp);
-//						if(
 						System.out.println("다음턴은"+msg);
 						svr.clientcontroller.sendToRoom(roomnum,"[GameNextTurn]"+msg);
 						randomWord = new RandomWord();
@@ -172,16 +164,106 @@ class Client extends Thread
 					}
 						//[Chat] 을 제외한 id + 메시지를 채팅창에 보냄
 				}
-				if(msg.startsWith("[login] "))
+				
+				else if(msg.startsWith("[Login] "))
 				{
-					//
-					setGameId(msg.substring(8));
-					msg="[login] "+id;
-					sendToMe(msg);
-					dos.writeUTF("[Roomlist]"+ svr.roomcontroller.totalRoom());	//roomlist에 모든 Room객체 의 정보를 받아서 접속한 client에 보냄
-					svr.clientcontroller.updateIDlist();
+					tokenizer1 = new StringTokenizer(msg.substring(8),"\t");
+					int i=0;
+					while(tokenizer1.hasMoreTokens()){
+						user[i] = tokenizer1.nextToken();
+						i++;
+					}
+					id = user[0];
+					pass = user[1];
+					ReValue = Login.Login(id,pass); 
 					
+					if(ReValue.equals("true")){
+						msg="[Login]" + id;
+						sendToMe(msg);
+						dos.writeUTF("[Roomlist]"+ svr.roomcontroller.totalRoom());	//roomlist에 모든 Room객체 의 정보를 받아서 접속한 client에 보냄
+						svr.clientcontroller.updateIDlist();
+					}
+					if(ReValue.equals("false")){
+						msg="[LoginFail]";
+						sendToMe(msg);
+					}
 				}
+				/*** 13.05.17 Modified ***/
+				else if(msg.startsWith("[LoginIDCheck] ")){
+					id = msg.substring(15); 
+					ReValue = Login.IDCheck(id);
+					
+					if(ReValue.equals("false")){
+						msg = "[LoginIDCheck]false";
+						sendToMe(msg);
+					}else{
+						msg = "[LoginIDCheck]true";
+						sendToMe(msg);
+					}
+				}
+				else if(msg.startsWith("[LoginFindID] ")){
+					tokenizer1 = new StringTokenizer(msg.substring(14),"\t");
+					int i=0;
+					while(tokenizer1.hasMoreTokens()){
+						user[i] = tokenizer1.nextToken();
+						i++;
+					}
+					
+					System.out.println(user[0] + user[1]);
+					name = user[0];
+					reginum = user[1];
+					ReValue = Login.FindID(name,reginum);
+					
+					if(!ReValue.equals(null)){
+						msg = "[LoginFindID]" + ReValue;
+						sendToMe(msg);
+					}else{
+						msg = "[LoginFindID]";
+						sendToMe(msg);
+					}
+				}
+				else if(msg.startsWith("[LoginFindPass] ")){
+					tokenizer1 = new StringTokenizer(msg.substring(16),"\t");
+					int i=0;
+					while(tokenizer1.hasMoreTokens()){
+						user[i] = tokenizer1.nextToken();
+						i++;
+					}
+					name = user[0];
+					id = user[1];
+					reginum = user[2];
+					ReValue = Login.FindPass(name,id,reginum);
+					if(!ReValue.equals(null)){
+						msg = "[LoginFindPass]" + ReValue;
+						sendToMe(msg);
+					}else{
+						msg = "[LoginFindPass]";
+						sendToMe(msg);
+					}
+				}
+				else if(msg.startsWith("[LoginSignUp] ")){
+					tokenizer1 = new StringTokenizer(msg.substring(14),"\t");
+					int i=0;
+					while(tokenizer1.hasMoreTokens()){
+						user[i] = tokenizer1.nextToken();
+						i++;
+					}
+					name = user[0];
+					id = user[1];
+					pass = user[2];
+					reginum = user[3];
+					// 테스트
+					System.out.println(name + id + pass + reginum);
+					
+					ReValue = Login.SignUp(name,id,pass,reginum);
+					
+					if(!ReValue.equals("true")){
+						msg = "[LoginSignUp]";
+						sendToMe(msg);
+					}
+				}
+				/*** 13.05.17 Modified ***/
+				
 				else if(msg.startsWith("[MakeRoom] "))
 				{
 					
@@ -276,7 +358,7 @@ class Client extends Thread
 				
 				
 			}
-		} catch (IOException ex) { 
+		} catch (IOException | SQLException ex) { 
 			System.out.println(id+" ("+ this.socket.getInetAddress() + ") " + "접속 해지");
 		}
 		finally {
